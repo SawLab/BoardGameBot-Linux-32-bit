@@ -58,13 +58,22 @@ bot.on('guildMemberRemove', (member, evt) => {
 bot.on('message', function (user, userID, channelID, message, evt) {
 	// Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-	if(message.toLowerCase().includes('good bot')) {
+	if(message.toLowerCase().includes('good bot') || message.toLowerCase().includes('goodbot')) {
 		if (message.toLowerCase().includes('not') || message.toLowerCase().includes('isnt') || message.toLowerCase().includes('isn\'t')) { SendMessageToServer(':cry:', channelID); }
 		else { SendMessageToServer(':blush:', channelID); }
 	}
-	if(message.toLowerCase().includes('bad bot')) {
+	if(message.toLowerCase().includes('bad bot') || message.toLowerCase().includes('badbot')) {
 		if (message.toLowerCase().includes('not') || message.toLowerCase().includes('isnt') || message.toLowerCase().includes('isn\'t')) { SendMessageToServer(':blush:', channelID); }
 		else { SendMessageToServer(':cry:', channelID); }
+	}
+	
+	if(message.toLowerCase().includes('worst bot') || message.toLowerCase().includes('worstbot')) 
+	{
+		if (message.toLowerCase().includes('not') || message.toLowerCase().includes('isnt') || message.toLowerCase().includes('isn\'t')) { SendMessageToServer(':confused:', channelID); }
+		else
+		{
+			SendMessageToServer(`Setting <@!${userID}> total wins to 0...\nSetting weekly wins to 0...\nSetting monthly wins to 0...\nBanning user...\nJust kidding! :smiling_imp:`, channelID);
+		}
 	}
 	
     if (message.substring(0, 1) == '!') {
