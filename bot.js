@@ -1180,14 +1180,14 @@ function RestoreDatabase(userID, channelID, num) {
 	else {
 		db.close(); //close the database connection so we can modify it
 		
-		 if (shell.exec("del BoardGameBot.db").code !== 0) {
+		 if (shell.exec("rm BoardGameBot.db").code !== 0) {
 			let message = `${num} day database restoration failed. Could not delete database.`;
 			SendMessageToServer(message, channelID);
 			shell.exit(1);
 		} 
 		else {
 			
-			if (shell.exec(`sqlite3 BoardGameBot.db < ${num}dayBackup.bak`).code !== 0) {
+			if (shell.exec(`sqlite3 BoardGameBot.db < ${num}DayBackup.bak`).code !== 0) {
 			let message = `${num} day database restoration failed. Could not insert backup data.`;
 			SendMessageToServer(message, channelID);
 			shell.exit(1);
@@ -1224,7 +1224,7 @@ function UndoDatabaseRestore(userID, channelID) {
 		}
 		else {
 			db.close(); //close the database so we don't have any issues deleting it and reconnecting
-			if (shell.exec("del BoardGameBot.db").code !== 0) { //delete the current database
+			if (shell.exec("rm BoardGameBot.db").code !== 0) { //delete the current database
 				let message = `Undo database restoration failed. Could not delete database.`;
 				SendMessageToServer(message, channelID);
 				shell.exit(1);
@@ -1241,13 +1241,13 @@ function UndoDatabaseRestore(userID, channelID) {
 						{
 							return console.error(err.message);
 						}
-						if (shell.exec("del Old.bak").code !== 0) { //Delete the old database so we can make the previous database we just reverted from the old database
+						if (shell.exec("rm Old.bak").code !== 0) { //Delete the old database so we can make the previous database we just reverted from the old database
 							let message = `Undo database restoration failed. Could not delete old database.`;
 							SendMessageToServer(message, channelID);
 							shell.exit(1);
 						}
 						else {
-							if (shell.exec("rename Undo.bak Old.bak").code !== 0) { //Rename the undone database to Old.bak so that we can revert the undo
+							if (shell.exec("mv Undo.bak Old.bak").code !== 0) { //Rename the undone database to Old.bak so that we can revert the undo
 							let message = `Undo database restoration failed. Could not rename the backup.`;
 							SendMessageToServer(message, channelID);
 							shell.exit(1);
@@ -1867,10 +1867,10 @@ function StartCronJobs()
 		});
 	});
 	
-	//1 day backup cron-job. Run each day at 00:40.
-	cron.schedule('40 */24 * * *', function() {
+	//1 day backup cron-job. Run each day at 00:55.
+	cron.schedule('55 */24 * * *', function() {
 		console.log('Running 24 hour backup cron-job...');
-		if (shell.exec("sqlite3 BoardGameBot.db .dump > 1dayBackup.bak").code !== 0) {
+		if (shell.exec("sqlite3 BoardGameBot.db .dump > 1DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
 			shell.exit(1);
 		}
@@ -1882,7 +1882,7 @@ function StartCronJobs()
 	//3 day backup cron-job. Backup database every 72 hours at 00:59
 	cron.schedule('59 */72 * * *', function() {
 		console.log('Running 3 day backup cron-job...');
-		if (shell.exec("sqlite3 BoardGameBot.db .dump > 3dayBackup.bak").code !== 0) {
+		if (shell.exec("sqlite3 BoardGameBot.db .dump > 3DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
 			shell.exit(1);
 		}
@@ -1894,7 +1894,7 @@ function StartCronJobs()
 	//7 day backup cron-job. Backup database every 168 days at 00:30.
 	cron.schedule('30 */168 * * *', function() {
 		console.log('Running 7 day backup cron-job...');
-		if (shell.exec("sqlite3 BoardGameBot.db .dump > 7dayBackup.bak").code !== 0) {
+		if (shell.exec("sqlite3 BoardGameBot.db .dump > 7DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
 			shell.exit(1);
 		}
