@@ -728,7 +728,7 @@ function ViewMyTotalScore(userID, channelID)
 function ViewSourceCode(channelID)
 {
 	let message = 'Enter my secret chambers...'
-				+ '\nhttps://github.com/SawLab/BoardGameBot/blob/master/bot.js';
+				+ '\nhttps://github.com/SawLab/BoardGameBot-Linux-32-bit/blob/master/bot.js';
 	SendMessageToServer(message, channelID);
 }
 
@@ -780,7 +780,7 @@ function ViewAdmins(channelID)
 	var headAdminID = auth.headAdminID;
 	var adminIDs = auth.adminIDs;
 	
-	let message = `__**Head Admin:**__\n<@!${headAdminID}>\n\n__**Admins**__\n`;
+	let message = `__**Head Admin:**__\n<@!${headAdminID}>\n\n__**Admins:**__\n`;
 	
 	adminIDs.forEach(function(id) {
 		message = `${message}<@!${id}>\n`;
@@ -812,18 +812,32 @@ function DuelUser(userID, channelID, userToDuel)
 		let message = `Incorrect user format. Format: **!duel {@userMention}**`;
 		return SendMessageToServer(message, channelID);
 	}
+
 	
 	userToDuelID = GetIDFromMention(userToDuel);
+
+	if (userToDuelID ==='586429426133106699' || userID === '586429426133106699') { //check if dueling the bot
+		let message = `I win. Don\'t even try.`;
+		return SendMessageToServer(message, channelID);
+	}
 	
 
 	let sql = `SELECT gameID, wins FROM WinTable WHERE userID = ? ORDER BY gameID`; //get user1 win records
 	db.all(sql, [userID], function(err, rows) {
 		if (err) { return console.error(err.message); }
+		if (rows.length === 0) {
+			let message = `No win records for <@!${userID}>. They must type **!addme** or a game needs to be added.`;
+			return SendMessageToServer(message, channelID);
+		}
 		user1WinRecords = rows;
 		
 		sql = `SELECT gameID, wins FROM WinTable WHERE userID = ? ORDER BY gameID`; //get user2 win records
 		db.all(sql, [userToDuelID], function(err, rows) {
 			if (err) { return console.error(err.message); }
+			if (rows.length === 0) {
+				let message = `No win records for <@!${userToDuelID}>. They must type **!addme** or a game needs to be added.`;
+				return SendMessageToServer(message, channelID);
+			}
 			user2WinRecords = rows;
 			
 			if (user1WinRecords.length != user2WinRecords.length) {
@@ -911,7 +925,7 @@ function About(channelID)
 //Displays information on how to report a bug
 function BugReport(channelID)
 {
-	let message = 'Please report any bugs or issues to aharance@gmail.com or directly using GitHub: \nhttps://github.com/SawLab/BoardGameBot/issues.';
+	let message = 'Please report any bugs or issues to aharance@gmail.com or directly using GitHub: \nhttps://github.com/SawLab/BoardGameBot-Linux-32-bit/issues';
 	SendMessageToServer(message, channelID);
 }
 
@@ -1876,8 +1890,8 @@ function StartCronJobs()
 		});
 	});
 	
-	//1 day backup cron-job. Run each day at 00:55.
-	cron.schedule('55 */24 * * *', function() {
+	//1 day backup cron-job. Run each day at 05:10.
+	cron.schedule('10 5 * * *', function() {
 		console.log('Running 24 hour backup cron-job...');
 		if (shell.exec("sqlite3 BoardGameBot.db .dump > 1DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
@@ -1888,8 +1902,8 @@ function StartCronJobs()
 		}
 	});
 	
-	//3 day backup cron-job. Backup database every 72 hours at 00:59
-	cron.schedule('59 */72 * * *', function() {
+	//3 day backup cron-job. Backup database every tuesday and friday at 05:00
+	cron.schedule('0 5 * * 2,5', function() {
 		console.log('Running 3 day backup cron-job...');
 		if (shell.exec("sqlite3 BoardGameBot.db .dump > 3DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
@@ -1900,8 +1914,8 @@ function StartCronJobs()
 		}
 	});
 	
-	//7 day backup cron-job. Backup database every 168 days at 00:30.
-	cron.schedule('30 */168 * * *', function() {
+	//7 day backup cron-job. Backup database every sunday at 05:05
+	cron.schedule('5 5 * * 0', function() {
 		console.log('Running 7 day backup cron-job...');
 		if (shell.exec("sqlite3 BoardGameBot.db .dump > 7DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
