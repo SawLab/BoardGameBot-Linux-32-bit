@@ -37,12 +37,21 @@ bot.on('ready', function (evt) {
 	StartCronJobs();
 });
 
+//If the bot disconnects from the server, reconnect
+bot.on('disconnect', function (errMsg, code) {
+	console.log(errMsg);
+	console.log('Reconnecting...');
+	bot.connect();
+});
+
+//Give user info when joining channel
 bot.on('guildMemberAdd', function (member)
 {
 	let message = `Welcome <@!${member.id}>! Type **!addme** to get started or **!help** to see all my commands.`;
 	SendMessageToServer(message, auth.channelID);
 });
 
+//Delete user from database if they leave the channel
 bot.on('guildMemberRemove', (member, evt) => {
 	//Automatically remove users from the database when they leave the channel.
 	 new Promise((resolve,reject) => {
