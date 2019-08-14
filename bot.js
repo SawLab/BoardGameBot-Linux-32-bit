@@ -1381,14 +1381,13 @@ function AddWeekEvent(userID, channelID, dayOfWeek, hour, minute)
 	if (userID != auth.headAdminID) {
 		let message = `<@!${userID}> is not the head admin! :rage: `
 		return SendMessageToServer(message, channelID);
-	}
-	
-	dayOfWeek = dayOfWeek.toUpperCase();
 	
 	if (dayOfWeek == null) {
 		let message = `Missing Day of Week. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
 		return SendMessageToServer(message, channelID);
 	}
+	
+	dayOfWeek = dayOfWeek.toUpperCase();
 	
 	if (dayOfWeek != 'MON' && dayOfWeek != 'TUE' && dayOfWeek != 'WED' && dayOfWeek != 'THU' && dayOfWeek != 'FRI' && dayOfWeek != 'SAT' && dayOfWeek != 'SUN') {
 		let message = `Invalid Day format. Format: **MON TUE WED THU FRI SAT SUN**`;
@@ -1428,6 +1427,7 @@ function AddWeekEvent(userID, channelID, dayOfWeek, hour, minute)
 	if (minute.length == 1) {
 		minute = '0'.concat(message);
 	}
+
 	
 	let sql = `INSERT INTO WeeklyEvents (eventDay, eventHour, eventMinute) VALUES (?, ?, ?)`; //Add the weekly event to the database
 	db.run(sql, [dayOfWeek, hour, minute], function(err) {
