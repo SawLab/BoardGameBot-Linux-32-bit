@@ -99,6 +99,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		console.log('cmd1: ' + cmd1);
 		var cmd2 = args[2];
 		console.log('cmd2: ' + cmd2);
+		var cmd3 = args[3];
+		console.log('cmd3: ' + cmd3);
        
         args = args.splice(1);
         switch(cmd0) {
@@ -212,6 +214,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 				break;
 			case 'bug':
 				BugReport(channelID);
+				break;
+			case 'addevent':
+				AddWeekEvent(userID, channelID, cmd1, cmd2, cmd3);
+				break;
+			case 'deleteevent':
+				DeleteWeekEvent(userID, channelID, cmd1);
+				break;
+			case 'viewevents'
+				ViewEvents(channelID);
 				break;
 			default:
 				IncorrectCommand(channelID);
@@ -938,6 +949,21 @@ function BugReport(channelID)
 	SendMessageToServer(message, channelID);
 }
 
+//Display the scheduled event times
+function ViewEvents(channelID)
+{
+	let sql = `SELECT eventID, eventDay, eventHour, eventMinute FROM WeeklyEvents`;
+	db.all(sql, [], function(err, rows) {
+		if (err) { return console.error(err.message); }
+		
+		let message = '__**Weekly Scheduled Events**__\n';
+		
+		rows.forEach(row => {
+			message = `${message}${row.eventID}: ${row.eventDay} ${row.eventHour}:${row.eventMinute} CDT\n`;	
+		});		
+		SendMessageToServer(message, channelID);
+	});
+}
 /* HEAD ADMIN PRIVILEGES BELOW THIS POINT */
 
 //Head Admin only. Delete another user from the system
@@ -1239,7 +1265,7 @@ function RestoreDatabase(userID, channelID, num) {
 
 }
 
-//Undos the most recent database restoration
+//Head Admin only. Undoes the most recent database restoration
 function UndoDatabaseRestore(userID, channelID) {
 	
 	if (userID != auth.headAdminID) {
@@ -1306,7 +1332,7 @@ function UndoDatabaseRestore(userID, channelID) {
 });
 }
 
-//Displays the DateTime of each database backup
+//Head Admin only. Displays the DateTime of each database backup
 function ViewDatabaseBackupTimes(userID, channelID) {
 	
 	if (userID != auth.headAdminID) {
@@ -1346,6 +1372,114 @@ function ViewDatabaseBackupTimes(userID, channelID) {
 			SendMessageToServer(message, channelID);
 		});
 	})
+}
+
+//Head Admin Only. Add a weekly event.
+function AddWeekEvent(userID, channelID, dayOfWeek, hour, minute)
+{
+	if (userID != auth.headAdminID) {
+		let message = `<@!${userID}> is not the head admin! :rage: `
+		return SendMessageToServer(message, channelID);
+	}
+	
+	dayOfWeek = dayOfWeek.toUpperCase();
+	
+	if (dayOfWeek == null) {
+		let message = `Missing Day of Week. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (dayOfWeek != 'MON' && dayOfWeek != 'TUE' && dayOfWeek != 'WED' && dayOfWeek != 'THU' && dayOfWeek != 'FRI' && dayOfWeek != 'SAT' && dayOfWeek != 'SUN') {
+		let message = `Invalid Day format. Format: **MON TUE WED THU FRI SAT SUN**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (hour == null) {
+		let message = `Missing hour. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (hour.isNaN()) {
+		let message = `Hour must be an integer. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (parseInt(hour) < 0 || parseInt(hour) > 23) {
+		let message = `Hour must be between 0 and 23. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (minute == null) {
+		let message = `Missing minute. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (minute.isNaN()) {
+		let message = `Minute must be an integer. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (parseInt(minute) < 0 || parseInt(minute) > 59) {
+		let message = `Minute must be between 0 and 59. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (minute.length == 1) {
+		minute = '0'.concat(message);
+	}
+	
+	let sql = `INSERT INTO WeeklyEvents (eventDay, eventHour, eventMinute) VALUES (?, ?, ?)`; //Add the weekly event to the database
+	db.run(sql, [dayOfWeek, hour, minute], function(err) {
+		if (err) {
+			return console.error(err.message);
+		}
+		let message = `Created event on: ${dayOfWeek} ${hour}:${minute} CDT`;
+		SendMessageToServer(message, channelID);
+	});	
+}
+
+//Head Admin only. Delete a weekly event.
+function DeleteWeekEvent(userID, channelID, eventID)
+{
+	
+	if (userID != auth.headAdminID) {
+		let message = `<@!${userID}> is not the head admin! :rage: `
+		return SendMessageToServer(message, channelID);
+	}
+	
+	var id = parseInt(eventID);
+	
+	if (eventID == null) {
+		let message = 'Missing event ID. Format: **!deleteevent {eventID}**';
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (id.isNaN()) {
+		let message = 'The event id must be a number. Format: **!deleteevent {eventID}** Type **!viewevents** for a list of event IDs.';
+		return SendMessageToServer(message, channelID);
+	}
+	
+	if (userID != auth.headAdminID) {
+		let message = `<@!${userID}> is not the head admin! :rage: `
+		return SendMessageToServer(message, channelID);
+	}
+	
+	let sql = `SELECT FROM WeeklyEvents WHERE eventID = ?`;
+	db.get(sql, [id], function(err, row) {
+		if (err) { return console.error(err.message); }
+		if (row == null) {
+			let message = 'Event ID does not exist. Type **!viewevents** for a list of event IDs.';
+			return SendMessageToServer(message, channeldID);
+		}
+		else {
+			let sql = `DELETE FROM WeeklyEvents WHERE eventID = ?`;
+			db.run(sql, [id], function(err) {
+				if (err) { return console.error(err.message); }
+				let message = 'Weekly event deleted successfully.'
+				SendMessageToServer(message, channelID);
+			});
+		}
+	});
 }
 
 /* ADMIN PRIVILEGES BELOW THIS POINT */
@@ -1933,5 +2067,83 @@ function StartCronJobs()
 		else {
 			shell.echo('7 day backup complete');
 		}
+	});
+	
+	//Run every minute. Check event times to send reminder message.
+	cron.schedule('* * * * *', function() {
+		let sql = `SELECT eventDay, eventHour, eventMinute FROM WeeklyEvents`;
+		db.all(sql, [], function(err, rows) {
+			if (err) {return console.error(err.message)}
+			if (rows.length != 0) {
+				var date = new Date();
+				var day;
+				var hour = date.getHours();
+				var minute = date.getMinutes();
+					
+				switch (date.getDay()) {
+					case 0:
+						day = 'SUN';
+						break;
+					case 1:
+						day = 'MON';
+						break;
+					case 2:
+						day = "TUE";
+						break;
+					case 3:
+						day = "WED";
+						break;
+					case 4:
+						day = "THU";
+						break;
+					case 5:
+						day = "FRI";
+						break;
+					case 6:
+						day = "SAT";
+						break;
+				}
+				
+				rows.forEach(row => {
+					
+					if (row.eventHour == 0) {
+						switch (date.getDay() - 1) {
+							case -1:
+								day = 'SAT';
+								break;
+							case 0:
+								day = 'SUN';
+								break;
+							case 1:
+								day = "MON";
+								break;
+							case 2:
+								day = "TUE";
+								break;
+							case 3:
+								day = "WED";
+								break;
+							case 4:
+								day = "THU";
+								break;
+							case 5:
+								day = "FRI";
+								break;
+						}
+						
+						if (row.eventDay === day && 23 == hour && row.eventMinute == minute) {
+							'Hello ' + '@everyone' + '! One hour till the next session! Get ready to log some wins!';
+							SendMessageToServer(message, auth.channelID);
+						}
+					}
+					else {
+						if (row.eventDay === day && row.eventHour - 1 == hour && row.eventMinute == minute) {
+							let message = 'Hello ' + '@everyone' + '! One hour till the next session! Get ready to log some wins!';
+							SendMessageToServer(message, auth.channelID);
+						}
+					}
+				});		
+			}
+		});
 	});
 }
