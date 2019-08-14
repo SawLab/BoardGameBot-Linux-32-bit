@@ -668,6 +668,7 @@ function Help(channelID)
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!myscore {nickname}** - view your total wins for the specified game'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!viewgames** - view list of all games and their nicknames'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!duel {@userMention}** - duel the selected user. Most wins per game wins!'
+				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!viewevents** - view all scheduled weekly events'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!source** - view my source code'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!admin** - view admin commands'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t**!viewadmins** - view a list of all admins'
@@ -1501,6 +1502,8 @@ function ViewHeadAdminCommands(userID, channelID)
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!resetallusers** - RESETS ALL USER WINS.'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!addadmin {@userMention}** - gives the specified user admin permissions'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!deleteadmin {@userMention}** - removes the specified user\'s admin permissions'
+				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!addevent {SUN-SAT} {0-23} {0-59}** - add a scheduled weekly event at the scheduled time'
+				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!deleteevent {eventID}** - delete a scheduled weekly event'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!restoredatabase {num}** - Restores to the database back up from 1, 3 or 7 days ago'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!undorestore** - Undoes the most recent database backup restoration'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!viewbackups** - Displays the date and time of each stored backup';
