@@ -1400,7 +1400,7 @@ function AddWeekEvent(userID, channelID, dayOfWeek, hour, minute)
 		return SendMessageToServer(message, channelID);
 	}
 	
-	if (hour.isNaN()) {
+	if (isNaN(hour)) {
 		let message = `Hour must be an integer. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
 		return SendMessageToServer(message, channelID);
 	}
@@ -1415,7 +1415,7 @@ function AddWeekEvent(userID, channelID, dayOfWeek, hour, minute)
 		return SendMessageToServer(message, channelID);
 	}
 	
-	if (minute.isNaN()) {
+	if (isNaN(minute)) {
 		let message = `Minute must be an integer. Format: **!addweekevent {MON-SUN} {0-23} {0-59}**`;
 		return SendMessageToServer(message, channelID);
 	}
@@ -1455,7 +1455,7 @@ function DeleteWeekEvent(userID, channelID, eventID)
 		return SendMessageToServer(message, channelID);
 	}
 	
-	if (id.isNaN()) {
+	if (isNaN(id)) {
 		let message = 'The event id must be a number. Format: **!deleteevent {eventID}** Type **!viewevents** for a list of event IDs.';
 		return SendMessageToServer(message, channelID);
 	}
