@@ -221,7 +221,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 			case 'deleteevent':
 				DeleteWeekEvent(userID, channelID, cmd1);
 				break;
-			case 'viewevents'
+			case 'viewevents':
 				ViewEvents(channelID);
 				break;
 			default:
