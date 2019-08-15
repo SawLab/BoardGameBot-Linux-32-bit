@@ -1434,7 +1434,7 @@ function AddWeekEvent(userID, channelID, dayOfWeek, hour, minute)
 		if (err) {
 			return console.error(err.message);
 		}
-		let message = `Created event on: ${dayOfWeek} ${hour}:${minute} CDT`;
+		let message = `Created event for: ${dayOfWeek} ${hour}:${minute} CDT`;
 		SendMessageToServer(message, channelID);
 	});	
 }
