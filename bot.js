@@ -1965,6 +1965,9 @@ function GetIDFromMention(userMention)
 	return id;
 }
 
+//Global variable for the StartCronJobs function to prevent sending multiple messages
+let messageSent = false;
+
 //Starts the automated cron-jobs
 function StartCronJobs()
 {
@@ -2134,15 +2137,23 @@ function StartCronJobs()
 								break;
 						}
 						
-						if (row.eventDay === day && 23 == hour && row.eventMinute == minute) {
+						if (row.eventDay === day && 23 == hour && row.eventMinute == minute && !messageSent) {
 							'Hello ' + '@everyone' + '! One hour till the next session! Get ready to log some wins!';
 							SendMessageToServer(message, auth.channelID);
+							messageSent = true;
+						}
+						else if (row.eventDay != day || 23 != hour || row.eventMinute != minute) {
+							messageSent = false;
 						}
 					}
 					else {
-						if (row.eventDay === day && row.eventHour - 1 == hour && row.eventMinute == minute) {
+						if (row.eventDay === day && row.eventHour - 1 == hour && row.eventMinute == minute && !messageSent) {
 							let message = 'Hello ' + '@everyone' + '! One hour till the next session! Get ready to log some wins!';
 							SendMessageToServer(message, auth.channelID);
+							messageSent = true;
+						}
+						else if (row.eventDay != day || row.eventHour - 1 != hour || row.eventMinute != minute) {
+							messageSent = false;
 						}
 					}
 				});		
