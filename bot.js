@@ -18,6 +18,15 @@ var db = new sqlite3.Database('./BoardGameBot.db', (err) => {
 	}
 	console.log('Connected to BoardGameBot database');
 });
+
+var OneDayBackupJob = null;
+var ThreeDayBackupJob = null;
+var SevenDayBackupJob = null;
+var WeeklyWinsJob = null;
+var MonthlyWinsJob = null;
+var SaturdayEventJob = null;
+var TuesdayEventJob = null;
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
@@ -34,12 +43,31 @@ bot.on('ready', function (evt) {
     logger.info('Logged in as: ');
     logger.info(bot.username + ' - (' + bot.id + ')');
 	console.log('Starting cron jobs...');
-	StartCronJobs();
+	if (OneDayBackupJob == null) {
+		StartCronJobs();
+	}
+	else {
+		OneDayBackupJob.start();
+		ThreeDayBackupJob.start();
+		SevenDayBackupJob.start();
+		WeeklyWinsJob.start();
+		MonthlyWinsJob.start();
+		SaturdayEventJob.start();
+		TuesdayEventJob.start();
+	}
 });
 
 //If the bot disconnects from the server, reconnect
 bot.on('disconnect', function (errMsg, code) {
 	console.log(errMsg);
+	console.log('Stopping cron jobs...');
+	OneDayBackupJob.stop();
+	ThreeDayBackupJob.stop();
+	SevenDayBackupJob.stop();
+	WeeklyWinsJob.stop();
+	MonthlyWinsJob.stop();
+	SaturdayEventJob.stop();
+	TuesdayEventJob.stop();
 	console.log('Reconnecting...');
 	bot.connect();
 });
@@ -1972,7 +2000,7 @@ let messageSent = false;
 function StartCronJobs()
 {
 	//Weekly wins award message
-	cron.schedule("0 17 * * SUN", function() {
+	WeeklyWinsJob = cron.schedule("0 17 * * SUN", function() {
 		console.log('Starting top weekly wins cron job...');
 		var mostWeeklyWins;
 		let sql = `SELECT userID, weeklyWins FROM Users ORDER BY weeklyWins DESC`;
@@ -2006,7 +2034,7 @@ function StartCronJobs()
 	}); 
 	
 	//Monthly wins award message
-	cron.schedule("0 17 1 * *", function() {
+	MonthlyWinsJob = cron.schedule("0 17 1 * *", function() {
 		console.log('Starting top monthly wins cron job...');
 		var mostMonthlyWins;
 		let sql = `SELECT userID, monthlyWins FROM Users ORDER BY monthlyWins DESC`;
@@ -2040,7 +2068,7 @@ function StartCronJobs()
 	});
 	
 	//1 day backup cron-job. Run each day at 05:10.
-	cron.schedule('10 5 * * *', function() {
+	OneDayBackupJob = cron.schedule('10 5 * * *', function() {
 		console.log('Running 24 hour backup cron-job...');
 		if (shell.exec("sqlite3 BoardGameBot.db .dump > 1DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
@@ -2052,7 +2080,7 @@ function StartCronJobs()
 	});
 	
 	//3 day backup cron-job. Backup database every tuesday and friday at 05:00
-	cron.schedule('0 5 * * 2,5', function() {
+	ThreeDayBackupJob = cron.schedule('0 5 * * 2,5', function() {
 		console.log('Running 3 day backup cron-job...');
 		if (shell.exec("sqlite3 BoardGameBot.db .dump > 3DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
@@ -2064,7 +2092,7 @@ function StartCronJobs()
 	});
 	
 	//7 day backup cron-job. Backup database every sunday at 05:05
-	cron.schedule('5 5 * * 0', function() {
+	SevenDayBackupJob = cron.schedule('5 5 * * 0', function() {
 		console.log('Running 7 day backup cron-job...');
 		if (shell.exec("sqlite3 BoardGameBot.db .dump > 7DayBackup.bak").code !== 0) {
 			console.log('Backup failed.');
@@ -2075,8 +2103,26 @@ function StartCronJobs()
 		}
 	});
 	
+	//Send message to server on the 2nd Saturday of the month
+	SaturdayEventJob = cron.schedule('0 18 8-14 * *', function() {
+		var today = new Date();
+		if (today.getDay() == 6) {
+			let message = 'Hello ' + '@everyone' + '! One hour till the next session! Get ready to log some wins!';
+			SendMessageToServer(message, auth.channelID);
+		}
+	});
+	
+	//Send message to server on the 5th Tuesday of the month
+	TuesdayEventJob = cron.schedule('0 18 22-28 * *', function() {
+		var today = new Date();
+		if (today.getDay() == 2) {
+			let message = 'Hello ' + '@everyone' + '! One hour till the next session! Get ready to log some wins!';
+			SendMessageToServer(message, auth.channelID);
+		}
+	});
+	
 	//Run every minute. Check event times to send reminder message.
-	cron.schedule('* * * * *', function() {
+	/* cron.schedule('* * * * *', function() {
 		let sql = `SELECT eventDay, eventHour, eventMinute FROM WeeklyEvents`;
 		db.all(sql, [], function(err, rows) {
 			if (err) {return console.error(err.message)}
@@ -2159,5 +2205,5 @@ function StartCronJobs()
 				});		
 			}
 		});
-	});
+	}); */
 }
