@@ -1002,6 +1002,7 @@ function ViewEvents(channelID)
 	
 	while (dayOfTheMonth > 7 && dayOfTheMonth < 15) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
+		console.log(dateToCheck);
 		if (dateToCheck.getDay() == 6) {
 			firstDate = dateToCheck;
 			break;
@@ -1035,6 +1036,7 @@ function ViewEvents(channelID)
 	while(dayOfTheMonth > 21 && dayOfTheMonth < 29) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
 		if (dateToCheck.getDay() == 2) {
+			console.log(dateToCheck);
 			secondDate = dateToCheck;
 			break;
 		}
