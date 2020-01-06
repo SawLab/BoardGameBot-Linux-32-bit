@@ -243,12 +243,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 			case 'bug':
 				BugReport(channelID);
 				break;
-			case 'addevent':
-				AddWeekEvent(userID, channelID, cmd1, cmd2, cmd3);
-				break;
-			case 'deleteevent':
-				DeleteWeekEvent(userID, channelID, cmd1);
-				break;
+			//case 'addevent':
+				//AddWeekEvent(userID, channelID, cmd1, cmd2, cmd3);
+				//break;
+			//case 'deleteevent':
+				//DeleteWeekEvent(userID, channelID, cmd1);
+				//break;
 			case 'viewevents':
 				ViewEvents(channelID);
 				break;
@@ -981,7 +981,89 @@ function BugReport(channelID)
 //Display the scheduled event times
 function ViewEvents(channelID)
 {
-	let sql = `SELECT eventID, eventDay, eventHour, eventMinute FROM WeeklyEvents`;
+	var today = new Date();
+	var year = today.getYear();
+	var month = today.getMonth();
+	var dayOfTheMonth = today.getDate();
+	var firstDate;
+	var secondDate;
+	
+	if (dayOfMonth < 8) { dayOfMonth = 8; }
+	else if (dayOfMonth > 14) {
+		dayOfMonth = 8;
+		if (month == 11) {
+			month = 0;
+			year++;
+		}
+		else {
+			month++;
+		}
+	}
+	
+	while (dayOfMonth > 7 && dayOfTheMonth < 15) {
+		var dateToCheck = new Date(year, month, dayOfTheMonth);
+		if (dateToCheck.getDay() == 6) {
+			firstDate = dateToCheck;
+			break;
+		}
+		dayOfTheMonth++;
+		
+		if (dayOfTheMonth == 15) {
+			dayOfMonth = 8;
+			if (month == 11) {
+				month = 0;
+				year++;
+			}
+			else {month++;}
+		}
+	}
+	
+	dayOfMonth = today.getDate();
+	
+	if (dayOfMonth < 22) { dayOfMonth = 22; }
+	else if (dayOfMonth > 28) {
+		dayOfMonth = 22;
+		if (month == 11) {
+			month = 0;
+			year++;
+		}
+		else {
+			month++;
+		}
+	}
+	
+	while(dayOfMonth > 21 && dayOfMonth < 29) {
+		var dateToCheck = new Date(year, month, dayOfTheMonth);
+		if (dateToCheck.getDay() == 2) {
+			secondDate = dateToCheck;
+			break;
+		}
+		dayOfTheMonth++;
+		
+		if (dayOfTheMonth == 29) {
+			dayOfMonth = 22;
+			if (month == 11) {
+				month = 0;
+				year++;
+			}
+			else {month++;}
+		}
+	}
+	
+	let message = '__**Coming up events:**__ :calendar_spiral:\n';
+	var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+	var locale = "en-US";
+	if (firstDate < secondDate) {
+		message += firstDate.toLocaleString(locale, options) + "\n";
+		message += secondDate.toLocaleString(locale, options)
+	}
+	else {
+		message += secondDate.toLocaleString(locale, options) + "\n";
+		message += firstDate.toLocaleString(locale, options)
+	}
+	
+	SendMessageToServer(message, channelID);
+	/* let sql = `SELECT eventID, eventDay, eventHour, eventMinute FROM WeeklyEvents`;
 	db.all(sql, [], function(err, rows) {
 		if (err) { return console.error(err.message); }
 		
@@ -991,7 +1073,8 @@ function ViewEvents(channelID)
 			message = `${message}${row.eventID}: ${row.eventDay} ${row.eventHour}:${row.eventMinute} CDT\n`;	
 		});		
 		SendMessageToServer(message, channelID);
-	});
+	}); */
+	
 }
 /* HEAD ADMIN PRIVILEGES BELOW THIS POINT */
 
@@ -1530,8 +1613,8 @@ function ViewHeadAdminCommands(userID, channelID)
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!resetallusers** - RESETS ALL USER WINS.'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!addadmin {@userMention}** - gives the specified user admin permissions'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!deleteadmin {@userMention}** - removes the specified user\'s admin permissions'
-				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!addevent {SUN-SAT} {0-23} {0-59}** - add a scheduled weekly event at the scheduled time'
-				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!deleteevent {eventID}** - delete a scheduled weekly event'
+				//+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!addevent {SUN-SAT} {0-23} {0-59}** - add a scheduled weekly event at the scheduled time'
+				//+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!deleteevent {eventID}** - delete a scheduled weekly event'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!restoredatabase {num}** - Restores to the database back up from 1, 3 or 7 days ago'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!undorestore** - Undoes the most recent database backup restoration'
 				+ '\n\t\t\t\t\t\t\t\t\t\t\t\t**!viewbackups** - Displays the date and time of each stored backup';
@@ -2112,7 +2195,7 @@ function StartCronJobs()
 		}
 	});
 	
-	//Send message to server on the 5th Tuesday of the month
+	//Send message to server on the 4th Tuesday of the month
 	TuesdayEventJob = cron.schedule('0 18 22-28 * *', function() {
 		var today = new Date();
 		if (today.getDay() == 2) {
