@@ -1002,7 +1002,11 @@ function ViewEvents(channelID)
 	
 	while (dayOfTheMonth > 7 && dayOfTheMonth < 15) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
+		var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+		var locale = "en-US";
 		console.log(dateToCheck);
+		console.log(dateToCheck.getDay());
+		console.log(dateToCheck.toLocaleString(locale, options));
 		if (dateToCheck.getDay() == 6) {
 			firstDate = dateToCheck;
 			break;
@@ -1035,6 +1039,11 @@ function ViewEvents(channelID)
 	
 	while(dayOfTheMonth > 21 && dayOfTheMonth < 29) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
+		var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+		var locale = "en-US";
+		console.log(dateToCheck);
+		console.log(dateToCheck.getDay());
+		console.log(dateToCheck.toLocaleString(locale, options));
 		if (dateToCheck.getDay() == 2) {
 			console.log(dateToCheck);
 			secondDate = dateToCheck;
