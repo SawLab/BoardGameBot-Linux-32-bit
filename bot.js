@@ -1056,12 +1056,12 @@ function ViewEvents(channelID)
 	var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 	var locale = "en-US";
 	if (firstDate < secondDate) {
-		message += firstDate.toLocaleString(locale, options) + " 7 PM CST/ 8PM EST\n";
-		message += secondDate.toLocaleString(locale, options) + " 7 PM CST/ 8PM EST";
+		message += firstDate.toLocaleString(locale, options) + " 7 PM CST/8PM EST\n";
+		message += secondDate.toLocaleString(locale, options) + " 7 PM CST/8PM EST";
 	}
 	else {
-		message += secondDate.toLocaleString(locale, options) + "7PM CST/ 8PM EST\n";
-		message += firstDate.toLocaleString(locale, options) + " 7PM CST/ 8PM EST";
+		message += secondDate.toLocaleString(locale, options) + "7PM CST/8PM EST\n";
+		message += firstDate.toLocaleString(locale, options) + " 7PM CST/8PM EST";
 	}
 	
 	SendMessageToServer(message, channelID);
