@@ -982,7 +982,7 @@ function BugReport(channelID)
 function ViewEvents(channelID)
 {
 	var today = new Date();
-	var year = today.getYear();
+	var year = today.getYear() + 1900;
 	var month = today.getMonth();
 	var dayOfTheMonth = today.getDate();
 	var firstDate;
