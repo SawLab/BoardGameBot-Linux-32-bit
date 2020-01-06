@@ -988,9 +988,9 @@ function ViewEvents(channelID)
 	var firstDate;
 	var secondDate;
 	
-	if (dayOfMonth < 8) { dayOfMonth = 8; }
-	else if (dayOfMonth > 14) {
-		dayOfMonth = 8;
+	if (dayOfTheMonth < 8) { dayOfTheMonth = 8; }
+	else if (dayOfTheMonth > 14) {
+		dayOfTheMonth = 8;
 		if (month == 11) {
 			month = 0;
 			year++;
@@ -1000,7 +1000,7 @@ function ViewEvents(channelID)
 		}
 	}
 	
-	while (dayOfMonth > 7 && dayOfTheMonth < 15) {
+	while (dayOfTheMonth > 7 && dayOfTheMonth < 15) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
 		if (dateToCheck.getDay() == 6) {
 			firstDate = dateToCheck;
@@ -1009,7 +1009,7 @@ function ViewEvents(channelID)
 		dayOfTheMonth++;
 		
 		if (dayOfTheMonth == 15) {
-			dayOfMonth = 8;
+			dayOfTheMonth = 8;
 			if (month == 11) {
 				month = 0;
 				year++;
@@ -1018,11 +1018,11 @@ function ViewEvents(channelID)
 		}
 	}
 	
-	dayOfMonth = today.getDate();
+	dayOfTheMonth = today.getDate();
 	
-	if (dayOfMonth < 22) { dayOfMonth = 22; }
-	else if (dayOfMonth > 28) {
-		dayOfMonth = 22;
+	if (dayOfTheMonth < 22) { dayOfTheMonth = 22; }
+	else if (dayOfTheMonth > 28) {
+		dayOfTheMonth = 22;
 		if (month == 11) {
 			month = 0;
 			year++;
@@ -1032,7 +1032,7 @@ function ViewEvents(channelID)
 		}
 	}
 	
-	while(dayOfMonth > 21 && dayOfMonth < 29) {
+	while(dayOfTheMonth > 21 && dayOfTheMonth < 29) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
 		if (dateToCheck.getDay() == 2) {
 			secondDate = dateToCheck;
@@ -1041,7 +1041,7 @@ function ViewEvents(channelID)
 		dayOfTheMonth++;
 		
 		if (dayOfTheMonth == 29) {
-			dayOfMonth = 22;
+			dayOfTheMonth = 22;
 			if (month == 11) {
 				month = 0;
 				year++;
