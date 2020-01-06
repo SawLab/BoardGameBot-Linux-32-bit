@@ -115,7 +115,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	
     if (message.substring(0, 1) == '!') {
 		
-		if (channelID in bot.directMessages && userID != headAdminID) {	//block direct message commands
+		if (channelID in bot.directMessages && userID != auth.headAdminID) {	//block direct message commands
 			let message = 'Your attempts to be sneaky are futile. My commands only work in the main channel.';
 			return SendMessageToServer(message, channelID);
 		}
