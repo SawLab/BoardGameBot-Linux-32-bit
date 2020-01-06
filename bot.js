@@ -1036,7 +1036,6 @@ function ViewEvents(channelID)
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
 		
 		if (dateToCheck.getDay() == 2) {
-			console.log(dateToCheck);
 			secondDate = dateToCheck;
 			break;
 		}
