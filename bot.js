@@ -987,7 +987,6 @@ function ViewEvents(channelID)
 	var dayOfTheMonth = today.getDate();
 	var firstDate;
 	var secondDate;
-	console.log(year);
 	if (dayOfTheMonth < 8) { dayOfTheMonth = 8; }
 	else if (dayOfTheMonth > 14) {
 		dayOfTheMonth = 8;
@@ -1002,11 +1001,7 @@ function ViewEvents(channelID)
 	
 	while (dayOfTheMonth > 7 && dayOfTheMonth < 15) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
-		var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-		var locale = "en-US";
-		console.log(dateToCheck);
-		console.log(dateToCheck.getDay());
-		console.log(dateToCheck.toLocaleString(locale, options));
+		
 		if (dateToCheck.getDay() == 6) {
 			firstDate = dateToCheck;
 			break;
@@ -1039,11 +1034,7 @@ function ViewEvents(channelID)
 	
 	while(dayOfTheMonth > 21 && dayOfTheMonth < 29) {
 		var dateToCheck = new Date(year, month, dayOfTheMonth);
-		var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-		var locale = "en-US";
-		console.log(dateToCheck);
-		console.log(dateToCheck.getDay());
-		console.log(dateToCheck.toLocaleString(locale, options));
+		
 		if (dateToCheck.getDay() == 2) {
 			console.log(dateToCheck);
 			secondDate = dateToCheck;
@@ -1065,27 +1056,15 @@ function ViewEvents(channelID)
 	var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 	var locale = "en-US";
 	if (firstDate < secondDate) {
-		message += firstDate.toLocaleString(locale, options) + "\n";
-		message += secondDate.toLocaleString(locale, options)
+		message += firstDate.toLocaleString(locale, options) + " 7 PM CST/ 8PM EST\n";
+		message += secondDate.toLocaleString(locale, options) + " 7 PM CST/ 8PM EST";
 	}
 	else {
-		message += secondDate.toLocaleString(locale, options) + "\n";
-		message += firstDate.toLocaleString(locale, options)
+		message += secondDate.toLocaleString(locale, options) + "7PM CST/ 8PM EST\n";
+		message += firstDate.toLocaleString(locale, options) + " 7PM CST/ 8PM EST";
 	}
 	
 	SendMessageToServer(message, channelID);
-	/* let sql = `SELECT eventID, eventDay, eventHour, eventMinute FROM WeeklyEvents`;
-	db.all(sql, [], function(err, rows) {
-		if (err) { return console.error(err.message); }
-		
-		let message = '__**Weekly Scheduled Events**__\n';
-		
-		rows.forEach(row => {
-			message = `${message}${row.eventID}: ${row.eventDay} ${row.eventHour}:${row.eventMinute} CDT\n`;	
-		});		
-		SendMessageToServer(message, channelID);
-	}); */
-	
 }
 /* HEAD ADMIN PRIVILEGES BELOW THIS POINT */
 
