@@ -6,7 +6,7 @@
   "author": "Aharance",
   "dependencies": {
     "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "node-cron": "^2.0.3",
     "shelljs": "^0.8.3",
     "sqlite3": "^4.0.8",
